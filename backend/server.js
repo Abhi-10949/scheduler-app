@@ -24,6 +24,7 @@ app.get("/", (req, res) => {
 
 // CREATE EVENT
 app.post("/api/events", (req, res) => {
+    console.log("BODY:", req.body);
     const { title, description, duration, slug } = req.body;
 
     console.log("Incoming Data:", req.body);
