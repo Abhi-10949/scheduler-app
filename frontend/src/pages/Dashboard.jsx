@@ -19,7 +19,7 @@ export default function Dashboard() {
     // Fetch Events
     useEffect(() => {
         axios
-            .get("http://localhost:8000/api/events")
+            .get("https://scheduler-app-backend-fdag.onrender.com/api/events")
             .then((res) => setEvents(res.data))
             .catch((err) => console.error(err));
     }, []);
@@ -27,7 +27,7 @@ export default function Dashboard() {
     // Fetch Bookings
     useEffect(() => {
         axios
-            .get("http://localhost:8000/api/bookings")
+            .get("https://scheduler-app-backend-fdag.onrender.com/api/bookings")
             .then((res) => setBookings(res.data))
             .catch((err) => console.error(err));
     }, []);
@@ -40,7 +40,7 @@ export default function Dashboard() {
 
         try {
             const res = await axios.post(
-                "http://localhost:8000/api/events",
+                "https://scheduler-app-backend-fdag.onrender.com/api/events",
                 {
                     ...newEvent,
                     duration: Number(newEvent.duration),
@@ -66,7 +66,7 @@ export default function Dashboard() {
     const cancelBooking = async (id) => {
         if (!window.confirm("Cancel booking?")) return;
 
-        await axios.put(`http://localhost:8000/api/bookings/cancel/${id}`);
+        await axios.put(`https://scheduler-app-backend-fdag.onrender.com/api/bookings/cancel/${id}`);
 
         setBookings(
             bookings.map((b) =>
