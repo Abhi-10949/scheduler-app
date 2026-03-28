@@ -268,6 +268,7 @@ app.put("/api/bookings/cancel/:id", (req, res) => {
    SERVER
 ========================= */
 
-app.listen(8000, () => {
-    console.log("Server is running on port 8000");
+const PORT = Number(process.env.PORT) || 8000;
+app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
 });
