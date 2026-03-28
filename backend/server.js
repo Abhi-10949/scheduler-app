@@ -22,36 +22,10 @@ app.get("/", (req, res) => {
 // CREATE EVENT
 // ================= EVENTS =================
 
-function insertAvailabilityForEvent(eventId, rows, done) {
-    if (!rows || rows.length === 0) return done(null);
-
-    const insertQuery = `
-    INSERT INTO availability (event_id, day_of_week, start_time, end_time)
-    VALUES (?, ?, ?, ?)
-  `;
-
-    let i = 0;
-    function insertNext(err) {
-        if (err) return done(err);
-        if (i >= rows.length) return done(null);
-        const row = rows[i++];
-        const dow = Number(row.day_of_week);
-        if (Number.isNaN(dow) || dow < 0 || dow > 6) {
-            return done(new Error("Invalid day_of_week (use 0–6, same as JavaScript getDay)"));
-        }
-        db.query(
-            insertQuery,
-            [eventId, dow, row.start_time, row.end_time],
-            insertNext
-        );
-    }
-    insertNext(null);
-}
-
 // CREATE EVENT
 app.post("/api/events", (req, res) => {
     console.log("BODY:", req.body);
-    const { title, description, duration, slug, availability } = req.body;
+    const { title, description, duration, slug } = req.body;
 
     console.log("Incoming Data:", req.body);
 
@@ -85,23 +59,9 @@ app.post("/api/events", (req, res) => {
                 });
             }
 
-            const eventId = result.insertId;
-            const rows = Array.isArray(availability) ? availability : [];
-
-            insertAvailabilityForEvent(eventId, rows, (availErr) => {
-                if (availErr) {
-                    console.error("AVAILABILITY ERROR:", availErr);
-                    return res.status(500).json({
-                        message:
-                            availErr.message ||
-                            "Event created but failed to save availability",
-                    });
-                }
-
-                res.json({
-                    message: "Event created successfully",
-                    insertId: eventId,
-                });
+            res.json({
+                message: "Event created successfully",
+                insertId: result.insertId,
             });
         }
     );
@@ -188,7 +148,7 @@ app.get("/api/slots", (req, res) => {
                     const day = new Date(date).getDay();
 
                     const dayAvailability = availabilityResult.find(
-                        (a) => Number(a.day_of_week) === day
+                        (a) => a.day_of_week === day
                     );
 
                     if (!dayAvailability) return res.json([]);
@@ -308,7 +268,6 @@ app.put("/api/bookings/cancel/:id", (req, res) => {
    SERVER
 ========================= */
 
-const PORT = Number(process.env.PORT) || 8000;
-app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
+app.listen(8000, () => {
+    console.log("Server is running on port 8000");
 });

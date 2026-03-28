@@ -1,5 +1,6 @@
 import axios from "axios";
-import { API_ROOT } from "../config/api";
 
-export const getEvents = () => axios.get(`${API_ROOT}/events`);
-export const createEvent = (data) => axios.post(`${API_ROOT}/events`, data);
+const BASE_URL = "https://scheduler-app-backend-fdag.onrender.com/api";
+
+export const getEvents = () => axios.get(`${BASE_URL}/events`);
+export const createEvent = (data) => axios.post(`${BASE_URL}/events`, data);

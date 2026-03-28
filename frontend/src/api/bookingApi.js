@@ -1,6 +1,7 @@
 import axios from "axios";
-import { API_ROOT } from "../config/api";
 
-export const getBookings = () => axios.get(`${API_ROOT}/bookings`);
+const BASE_URL = "https://scheduler-app-backend-fdag.onrender.com/api";
+
+export const getBookings = () => axios.get(`${BASE_URL}/bookings`);
 export const cancelBooking = (id) =>
-    axios.put(`${API_ROOT}/bookings/cancel/${id}`);
+    axios.put(`${BASE_URL}/bookings/cancel/${id}`);

@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import Navbar from "../components/Navbar";
-import { API_ROOT } from "../config/api";
 
 export default function Dashboard() {
     const [events, setEvents] = useState([]);
@@ -17,25 +16,10 @@ export default function Dashboard() {
         slug: "",
     });
 
-    // Weekly availability for new event (day 0 = Sun … 6 = Sat, matches Date.getDay())
-    const [availByDay, setAvailByDay] = useState(() => new Set([1, 2, 3, 4, 5]));
-    const [availStart, setAvailStart] = useState("09:00");
-    const [availEnd, setAvailEnd] = useState("17:00");
-
-    const WEEKDAYS = [
-        { value: 0, label: "Sun" },
-        { value: 1, label: "Mon" },
-        { value: 2, label: "Tue" },
-        { value: 3, label: "Wed" },
-        { value: 4, label: "Thu" },
-        { value: 5, label: "Fri" },
-        { value: 6, label: "Sat" },
-    ];
-
     // Fetch Events
     useEffect(() => {
         axios
-            .get(`${API_ROOT}/events`)
+            .get("http://localhost:8000/api/events")
             .then((res) => setEvents(res.data))
             .catch((err) => console.error(err));
     }, []);
@@ -43,44 +27,23 @@ export default function Dashboard() {
     // Fetch Bookings
     useEffect(() => {
         axios
-            .get(`${API_ROOT}/bookings`)
+            .get("http://localhost:8000/api/bookings")
             .then((res) => setBookings(res.data))
             .catch((err) => console.error(err));
     }, []);
-
-    const toggleAvailDay = (day) => {
-        setAvailByDay((prev) => {
-            const next = new Set(prev);
-            if (next.has(day)) next.delete(day);
-            else next.add(day);
-            return next;
-        });
-    };
 
     // Create Event
     const createEvent = async () => {
         if (!newEvent.title || !newEvent.duration || !newEvent.slug) {
             return alert("Please fill required fields");
         }
-        if (availByDay.size === 0) {
-            return alert("Select at least one day when you are available");
-        }
-
-        const availability = [...availByDay]
-            .sort((a, b) => a - b)
-            .map((day_of_week) => ({
-                day_of_week,
-                start_time: availStart,
-                end_time: availEnd,
-            }));
 
         try {
             const res = await axios.post(
-                `${API_ROOT}/events`,
+                "http://localhost:8000/api/events",
                 {
                     ...newEvent,
                     duration: Number(newEvent.duration),
-                    availability,
                 }
             );
 
@@ -92,9 +55,6 @@ export default function Dashboard() {
                 duration: "",
                 slug: "",
             });
-            setAvailByDay(new Set([1, 2, 3, 4, 5]));
-            setAvailStart("09:00");
-            setAvailEnd("17:00");
 
             setShowCreateModal(false);
         } catch (err) {
@@ -106,7 +66,7 @@ export default function Dashboard() {
     const cancelBooking = async (id) => {
         if (!window.confirm("Cancel booking?")) return;
 
-        await axios.put(`${API_ROOT}/bookings/cancel/${id}`);
+        await axios.put(`http://localhost:8000/api/bookings/cancel/${id}`);
 
         setBookings(
             bookings.map((b) =>
@@ -259,45 +219,6 @@ export default function Dashboard() {
                             }
                             className="border p-2 w-full mb-2"
                         />
-
-                        <p className="text-sm font-medium text-gray-700 mt-3 mb-1">
-                            Available on (uses same weekday numbers as the booking calendar)
-                        </p>
-                        <div className="flex flex-wrap gap-2 mb-2">
-                            {WEEKDAYS.map(({ value, label }) => (
-                                <label
-                                    key={value}
-                                    className="flex items-center gap-1 text-sm cursor-pointer"
-                                >
-                                    <input
-                                        type="checkbox"
-                                        checked={availByDay.has(value)}
-                                        onChange={() => toggleAvailDay(value)}
-                                    />
-                                    {label}
-                                </label>
-                            ))}
-                        </div>
-                        <div className="flex gap-2 mb-2">
-                            <div className="flex-1">
-                                <label className="text-xs text-gray-600">From</label>
-                                <input
-                                    type="time"
-                                    value={availStart}
-                                    onChange={(e) => setAvailStart(e.target.value)}
-                                    className="border p-2 w-full"
-                                />
-                            </div>
-                            <div className="flex-1">
-                                <label className="text-xs text-gray-600">To</label>
-                                <input
-                                    type="time"
-                                    value={availEnd}
-                                    onChange={(e) => setAvailEnd(e.target.value)}
-                                    className="border p-2 w-full"
-                                />
-                            </div>
-                        </div>
 
                         <div className="flex justify-between">
                             <button onClick={() => setShowCreateModal(false)}>Cancel</button>
