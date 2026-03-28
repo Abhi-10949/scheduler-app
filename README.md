@@ -2,7 +2,9 @@
 
 A full-stack scheduling application that allows users to create events, manage availability, and book time slots dynamically.
 
----
+## 🌐 Live Demo
+
+🔗 https://scheduler-app-zeta-one.vercel.app/
 
 ## 🚀 Features
 
