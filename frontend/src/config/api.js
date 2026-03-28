@@ -1,11 +1,12 @@
 /**
- * Backend origin (no trailing slash). Set VITE_API_URL in Railway/Vercel/etc.
- * Example: https://scheduler-api-production.up.railway.app
- * Local dev: leave unset → http://localhost:8000
+ * API base path.
+ *
+ * - If `VITE_API_URL` is set (e.g. https://your-app.up.railway.app), requests go there.
+ *   Required for production when the frontend is on a different host than the API.
+ *
+ * - If unset, uses `/api` so Vite dev + preview can proxy to the local backend (see vite.config.js).
+ *   Run the backend on port 8000, then `npm run dev` or `npm run preview`.
  */
-const origin = (import.meta.env.VITE_API_URL || "http://localhost:8000").replace(
-    /\/$/,
-    ""
-);
+const envBase = import.meta.env.VITE_API_URL?.trim().replace(/\/$/, "");
 
-export const API_ROOT = `${origin}/api`;
+export const API_ROOT = envBase ? `${envBase}/api` : "/api";
