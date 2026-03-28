@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { useParams } from "react-router-dom";
+import { API_ROOT } from "../config/api";
 
 export default function BookingPage() {
     const { slug } = useParams();
@@ -19,7 +20,7 @@ export default function BookingPage() {
 
     // 🔥 Fetch event using slug
     useEffect(() => {
-        axios.get("https://scheduler-app-backend-fdag.onrender.com/api/events")
+        axios.get(`${API_ROOT}/events`)
             .then((res) => {
                 const event = res.data.find((e) => e.slug === slug);
                 if (event) {
@@ -34,7 +35,7 @@ export default function BookingPage() {
         if (!eventId || !date) return;
 
         const res = await axios.get(
-            `https://scheduler-app-backend-fdag.onrender.com/api/slots?eventId=${eventId}&date=${date}`
+            `${API_ROOT}/slots?eventId=${eventId}&date=${date}`
         );
 
         setSlots(res.data);
@@ -42,7 +43,7 @@ export default function BookingPage() {
 
     // 🔥 Book slot
     const bookSlot = async () => {
-        await axios.post("https://scheduler-app-backend-fdag.onrender.com/api/bookings", {
+        await axios.post(`${API_ROOT}/bookings`, {
             event_id: eventId,
             name,
             email,

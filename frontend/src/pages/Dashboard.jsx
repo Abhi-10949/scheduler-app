@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import Navbar from "../components/Navbar";
+import { API_ROOT } from "../config/api";
 
 export default function Dashboard() {
     const [events, setEvents] = useState([]);
@@ -34,7 +35,7 @@ export default function Dashboard() {
     // Fetch Events
     useEffect(() => {
         axios
-            .get("https://scheduler-app-backend-fdag.onrender.com/api/events")
+            .get(`${API_ROOT}/events`)
             .then((res) => setEvents(res.data))
             .catch((err) => console.error(err));
     }, []);
@@ -42,7 +43,7 @@ export default function Dashboard() {
     // Fetch Bookings
     useEffect(() => {
         axios
-            .get("https://scheduler-app-backend-fdag.onrender.com/api/bookings")
+            .get(`${API_ROOT}/bookings`)
             .then((res) => setBookings(res.data))
             .catch((err) => console.error(err));
     }, []);
@@ -75,7 +76,7 @@ export default function Dashboard() {
 
         try {
             const res = await axios.post(
-                "https://scheduler-app-backend-fdag.onrender.com/api/events",
+                `${API_ROOT}/events`,
                 {
                     ...newEvent,
                     duration: Number(newEvent.duration),
@@ -105,7 +106,7 @@ export default function Dashboard() {
     const cancelBooking = async (id) => {
         if (!window.confirm("Cancel booking?")) return;
 
-        await axios.put(`https://scheduler-app-backend-fdag.onrender.com/api/bookings/cancel/${id}`);
+        await axios.put(`${API_ROOT}/bookings/cancel/${id}`);
 
         setBookings(
             bookings.map((b) =>
