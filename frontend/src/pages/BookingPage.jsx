@@ -19,7 +19,7 @@ export default function BookingPage() {
 
     // 🔥 Fetch event using slug
     useEffect(() => {
-        axios.get("http://localhost:8000/api/events")
+        axios.get("https://scheduler-app-backend-fdag.onrender.com/api/events")
             .then((res) => {
                 const event = res.data.find((e) => e.slug === slug);
                 if (event) {
@@ -34,7 +34,7 @@ export default function BookingPage() {
         if (!eventId || !date) return;
 
         const res = await axios.get(
-            `http://localhost:8000/api/slots?eventId=${eventId}&date=${date}`
+            `https://scheduler-app-backend-fdag.onrender.com/api/slots?eventId=${eventId}&date=${date}`
         );
 
         setSlots(res.data);
@@ -42,7 +42,7 @@ export default function BookingPage() {
 
     // 🔥 Book slot
     const bookSlot = async () => {
-        await axios.post("http://localhost:8000/api/bookings", {
+        await axios.post("https://scheduler-app-backend-fdag.onrender.com/api/bookings", {
             event_id: eventId,
             name,
             email,
