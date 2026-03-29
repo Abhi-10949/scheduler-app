@@ -24,7 +24,7 @@ app.get("/", (req, res) => {
 
 // CREATE EVENT
 app.post("/api/events", (req, res) => {
-    console.log("BODY:", req.body);
+    // console.log("BODY:", req.body);
     const { title, description, duration, slug } = req.body;
 
     console.log("Incoming Data:", req.body);
@@ -59,10 +59,36 @@ app.post("/api/events", (req, res) => {
                 });
             }
 
-            res.json({
-                message: "Event created successfully",
-                insertId: result.insertId,
-            });
+            //Auto add availability
+            const eventId = result.insertId;
+
+            const availabilityQuery = `
+                INSERT INTO availability(event_id, day_of_week, start_time, end_time)
+                VALUES
+                (?, 1,'09:00:00','17:00:00'),
+                (?, 2,'09:00:00','17:00:00'),
+                (?, 3,'09:00:00','17:00:00'),
+                (?, 4,'09:00:00','17:00:00'),
+                (?, 5,'09:00:00','17:00:00')
+                `;
+
+                db.query(
+                    availabilityQuery,
+                    [eventId, eventId, eventId, eventId, eventId],
+                    (err) => {
+                        if(err) {
+                            console.error("Availability Error:", err);
+                            return res.status(500).json({
+                                message: "Event created but availability failed",
+                            });
+                        }
+
+                        res.json({
+                            message: "Event created with default availability",
+                            eventId: eventId,
+                        });
+                    }
+                );
         }
     );
 });
